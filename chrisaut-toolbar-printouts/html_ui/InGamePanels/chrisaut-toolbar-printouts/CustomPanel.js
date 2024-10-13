@@ -138,21 +138,33 @@ var printout = new PrintoutDisplay({
 });
 prevButtonElem.addEventListener('click', printout.prevMessage.bind(printout));
 nextButtonElem.addEventListener('click', printout.nextMessage.bind(printout));
-
 trashButtonElem.addEventListener('click', printout.trashMessage.bind(printout));
 
-let currSize = 2;
-const setSize = (element, x) => {
-    element.classList.forEach((className) => {
-        if (className.startsWith('text-size-')) {
-            element.classList.remove(className);
-        }
-    });
-    element.classList.add('text-size-' + x);
+let currSize = 16;  // Initial font size in pixels
+const minSize = 8;  // Minimum font size
+const maxSize = 72; // Maximum font size
+
+const setSizeDirectly = (element, size) => {
+    element.style.fontSize = `${size}px`;
 };
-smallerButtonElem.addEventListener('click', () => currSize > -4 ? setSize(currMessageContentElem, --currSize) : null);
-largerButtonElem.addEventListener('click', () => currSize < 4 ? setSize(currMessageContentElem, ++currSize) : null);
-setSize(currMessageContentElem, currSize)
+
+// Set up the event listeners for resizing buttons
+smallerButtonElem.addEventListener('click', () => {
+    if (currSize > minSize) {
+        currSize -= 2;  // Decrease font size by 2px
+        setSizeDirectly(currMessageContentElem, currSize);
+    }
+});
+
+largerButtonElem.addEventListener('click', () => {
+    if (currSize < maxSize) {
+        currSize += 2;  // Increase font size by 2px
+        setSizeDirectly(currMessageContentElem, currSize);
+    }
+});
+
+// Initialize the font size
+setSizeDirectly(currMessageContentElem, currSize);
 
 class IngamePanelCustomPanel extends TemplateElement {
     constructor() {
