@@ -99,7 +99,16 @@ class PrintoutDisplay {
     }
     trashMessage() {
         this.msgs.removeAt(this.msgs.currIndex);
-        this.nextMessage();
+    
+        // After removal, if `currIndex` is now out of bounds, adjust it to the last valid index
+        if (this.msgs.currIndex >= this.msgs.length) {
+            this.msgs.currIndex = this.msgs.length - 1;
+        }
+    
+        // If the list is now empty, reset `currIndex` to -1 to show "PRINTER READY" state
+        if (this.msgs.length === 0) {
+            this.msgs.currIndex = -1;
+        }
     }
 }
 
