@@ -38,6 +38,11 @@ class Messages {
     push(msg) {
         this.arr.push(msg);
         this.length = this.arr.length;
+    
+        // Auto-scroll logic to handle new message addition
+        if (this.currIndex === this.length - 2) {
+            this.currIndex++;
+        }
     }
 
     removeAt(i) {
@@ -98,17 +103,21 @@ class PrintoutDisplay {
         this._changeMessage(-1);
     }
     trashMessage() {
-        this.msgs.removeAt(this.msgs.currIndex);
+        const deletedIndex = this.msgs.currIndex;
+        this.msgs.removeAt(deletedIndex);
     
-        // After removal, if `currIndex` is now out of bounds, adjust it to the last valid index
-        if (this.msgs.currIndex >= this.msgs.length) {
-            this.msgs.currIndex = this.msgs.length - 1;
-        }
-    
-        // If the list is now empty, reset `currIndex` to -1 to show "PRINTER READY" state
-        if (this.msgs.length === 0) {
+        if (this.msgs.length > 0) {
+            if (deletedIndex === 0) {
+                this.msgs.currIndex = 0;
+            } else {
+                this.msgs.currIndex = Math.min(deletedIndex - 1, this.msgs.length - 1);
+            }
+        } else {
             this.msgs.currIndex = -1;
         }
+
+        // Needed or removal from start doesn't show correct message
+        this.msgs.notifySubscribers('currIndex', this.msgs.currIndex);
     }
 }
 
@@ -122,9 +131,7 @@ const smallerButtonElem = document.querySelector("#btnSmaller");
 const largerButtonElem = document.querySelector("#btnLarger");
 var printout = new PrintoutDisplay({
     onNewMessage: function(count) {
-      messageCountElem.innerHTML = count;
-      if(printout.msgs.currIndex == printout.msgs.length - 2)
-        printout.msgs.currIndex++; // auto switch to new messages if we are on the last message, if users flips to something else, we dont
+        messageCountElem.innerHTML = count;
     },
     onMessageChange: function(ix, msg) {
         if(ix < 0) {
