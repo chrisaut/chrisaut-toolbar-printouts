@@ -75,6 +75,13 @@ class PrintoutDisplay {
                 .then(response => {
                     if (response.status === 200) {
                         return response.text();
+                    } else if (response.status === 204) {
+                        if (this.msgs.currIndex === -1 || this.msgs.length === 0) {
+                            currMessageElem.innerHTML = '-';
+                            currMessageContentElem.innerHTML = '==PRINTER READY==';
+                        }
+                    } else {
+                        throw new Error(`Unexpected response status: ${response.status}`);
                     }
                 })
                 .then(text => {
@@ -82,9 +89,13 @@ class PrintoutDisplay {
                         this.msgs.push(text);
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    // Show "CONNECTION ERROR" only if there are no messages
+                    if (this.msgs.currIndex === -1 || this.msgs.length === 0) {
+                        currMessageElem.innerHTML = '-';
+                        currMessageContentElem.innerHTML = '==CONNECTION ERROR: NO CONNECTION==\n  Check that virtual_pos_printer.py script is running.';
+                    }
                 });
-        }, settings.url || 2000);        
+        }, settings.url || 2000);
     }
     stop() {
         if(this._timer) clearInterval(this._timer);
