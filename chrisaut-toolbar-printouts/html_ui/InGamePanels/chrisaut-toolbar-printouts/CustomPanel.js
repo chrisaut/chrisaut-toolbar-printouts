@@ -92,7 +92,7 @@ class PrintoutDisplay {
                     // Show "CONNECTION ERROR" only if there are no messages
                     if (this.msgs.currIndex === -1 || this.msgs.length === 0) {
                         currMessageElem.innerHTML = '-';
-                        currMessageContentElem.innerHTML = '==CONNECTION ERROR: NO CONNECTION==\n  Check that virtual_pos_printer.py script is running.';
+                        currMessageContentElem.innerHTML = '==CONNECTION ERROR: NO CONNECTION TO SCRIPT==\n  Check that virtual_pos_printer.py script is running.';
                     }
                 });
         }, settings.url || 2000);
