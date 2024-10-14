@@ -1,0 +1,22 @@
+<AssetPackage Name="chrisaut-toolbar-printouts" Version="2.0.0">
+	<ItemSettings>
+		<ContentType>SPB</ContentType>
+		<Title>chrisaut-toolbar-printouts</Title>
+		<Manufacturer>chrisaut</Manufacturer>
+		<Creator>chrisaut</Creator>
+	</ItemSettings>
+	<Flags>
+		<VisibleInStore>false</VisibleInStore>
+		<CanBeReferenced>false</CanBeReferenced>
+	</Flags>
+	<AssetGroups>
+		<AssetGroup Name="chrisaut-toolbar-printouts">
+			<Type>SPB</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>PackageSources\</AssetDir>
+			<OutputDir>Build\</OutputDir>
+		</AssetGroup>
+	</AssetGroups>
+</AssetPackage>
