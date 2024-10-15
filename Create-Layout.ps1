@@ -1,40 +1,53 @@
-foreach($mod in @('release/chrisaut-toolbar-printouts')) {
+function Create-FormattedJson {
+    param (
+        [Parameter(Mandatory=$true)]
+        [Array]$Files
+    )
 
-Set-Location $mod
+    $jsonString = "{`n  `"content`": [`n"
 
-# Get all files (and only files) in mod dir, excluding layout.json and manifest.json
-$files = Get-ChildItem "." -Recurse -Attributes !Directory -Exclude "layout.json", "manifest.json"
+    foreach ($file in $Files) {
+        $jsonString += "    {`n"
+        $jsonString += "      `"path`": `"$($file.path)`",`n"
+        $jsonString += "      `"size`": $($file.size),`n"
+        $jsonString += "      `"date`": $($file.date)`n"
+        $jsonString += "    },`n"
+    }
 
-# Create basic JSON structure
-$json = @{ 
-    "content" = @()
+    # Remove the trailing comma and new line from the last entry
+    $jsonString = $jsonString.TrimEnd(",`n") + "`n"
+
+    $jsonString += "  ]`n}"
+    return $jsonString
 }
 
-# Resolve the relative path of all files
-$files = Resolve-Path -Relative $files
+# Define the target directory
+$targetDirectory = 'release/chrisaut-toolbar-printouts'
 
-# Stores the sum of the size of all files in the project
-$total_file_size = 0
+# Navigate to the target directory
+Set-Location $targetDirectory
+
+# Gather all files, excluding layout.json and manifest.json
+$files = Get-ChildItem "." -Recurse -File -Exclude "layout.json", "manifest.json"
+$fileDetails = @()
 
 foreach ($file in $files) {
-    # Create the correct structure
-    $entry = @{
-        "path" = $file.Replace(".\", "").Replace("\", "/")
-        "size" = (Get-ItemProperty $file).Length
-        "date" = (Get-ItemProperty $file).LastWriteTime.ToFileTime()
+    # Collect file details into a custom object for JSON generation
+    $fileDetails += @{
+        "path" = $file.FullName.Replace((Get-Location).Path + "\", "").Replace("\", "/")
+        "size" = $file.Length
+        "date" = $file.LastWriteTimeUtc.ToFileTimeUtc()
     }
-    $json["content"] += $entry
-    $total_file_size += (Get-ItemProperty $file).Length
 }
 
-# Convert to JSON and output in layout.json
-$json | ConvertTo-Json | Out-File -FilePath "layout.json" -Encoding utf8
+# Use the custom function to create the JSON string
+$formattedJson = Create-FormattedJson -Files $fileDetails
 
-if (Test-Path "./manifest.json") {
-    $manifest = (Get-Content "manifest.json" | ConvertFrom-Json)
-    $manifest.total_package_size = $total_file_size.ToString().PadLeft(20,'0')
-    $manifest | ConvertTo-Json | Out-File -FilePath "manifest.json" -Encoding utf8
-}
+# Define the output path for layout.json
+$outputPath = Join-Path -Path (Get-Location) -ChildPath "layout.json"
 
-Set-Location ..
-}
+# Write the formatted JSON string directly to layout.json in the specified directory
+[System.IO.File]::WriteAllText($outputPath, $formattedJson)
+
+# Return to the initial directory
+Pop-Location
