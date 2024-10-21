@@ -1,5 +1,5 @@
 # chrisaut-toolbar-printouts
-This community addon toolbar for MSFS is designed to be used with MSFS-PyScriptManager script "virtual_pos_printer".  This script in conjunction with this toolbar allows print-jobs from Fenix A32x to show in the MSFS interface.
+This community addon toolbar for MSFS is designed to be used with MSFS-PyScriptManager script "virtual_pos_printer".  The script in conjunction with this toolbar allows print-jobs from Fenix A32x to show in the MSFS interface.
 
 [MSFS-PyScriptManager](https://github.com/cgtrout/MSFS-PyScriptManager)
 
